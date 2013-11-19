@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<style type='text/css'>
+canvas {
+  border: 1px solid #aaa;
+}
+</style>
+
+<script type="text/javascript" src="jquery-1.4.3.min.js"></script>
+<script type="text/javascript">
+var context;
+var width = 500;
+var height = 500;
+
+$(document).ready(function() {
+  var canvas = $('#canvas');
+  context = canvas.get(0).getContext('2d');
+
+  canvas.click(function(e) {
+    var mousex = e.pageX - canvas.offset().left;
+    var mousey = e.pageY - canvas.offset().top;
+    console.log(mousex + " " + mousey);
+  });
+
+});
+
+</script>
+</head>
+<body>
+<canvas id='canvas' width=500 height=500></canvas>
+</body>
+</html>
