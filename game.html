@@ -12,6 +12,22 @@ canvas {
 var context;
 var width = 500;
 var height = 500;
+var x = 0;
+var y = 0;
+
+function drawCircle(p,color,radius) {
+  context.fillStyle = color;
+  context.beginPath();
+  context.arc(p.x,p.y,radius,0,Math.PI*2,true);
+  context.closePath();
+  context.fill();
+}
+
+function draw() {
+  var point = {"x":x,"y":y};
+  drawCircle(point, "blue", 15);
+  requestAnimationFrame(draw);
+}
 
 $(document).ready(function() {
   var canvas = $('#canvas');
@@ -20,8 +36,14 @@ $(document).ready(function() {
   canvas.click(function(e) {
     var mousex = e.pageX - canvas.offset().left;
     var mousey = e.pageY - canvas.offset().top;
-    console.log(mousex + " " + mousey);
   });
+
+  canvas.mousemove(function(e) {
+    x = e.pageX - canvas.offset().left;
+    y = e.pageY - canvas.offset().top;
+  });
+
+  requestAnimationFrame(draw);
 
 });
 
