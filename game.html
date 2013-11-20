@@ -17,6 +17,8 @@ var player;
 var playerDirection;
 var playerSpeed = 3;
 var mouse;
+var bullet;
+var bulletDirection;
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -37,6 +39,11 @@ function draw() {
   playerDirection = getDirection(player, mouse);
   player = combineVector(player, playerDirection);
   drawCircle(player, "blue", 15);
+
+  var bulletVector = {"x" : bulletDirection.x * 3, "y" : bulletDirection.y * 3};
+  bullet = combineVector(bullet, bulletVector);
+  drawCircle(bullet, "yellow", 5);
+
   requestAnimationFrame(draw);
 }
 
@@ -82,16 +89,24 @@ function Point(x,y) {
   this.y = y;
 }
 
+function playerFiresAt(target) {
+  bullet.x = player.x;
+  bullet.y = player.y;
+
+  bulletDirection = getAngle(player, target);
+}
+
 $(document).ready(function() {
   var canvas = $('#canvas');
   context = canvas.get(0).getContext('2d');
 
   player = new Point(width / 2, height / 2);
   mouse = new Point(0,0);
+  bullet = new Point(0,0);
+  bulletDirection = new Point(0,0);
 
   canvas.click(function(e) {
-    var mousex = e.pageX - canvas.offset().left;
-    var mousey = e.pageY - canvas.offset().top;
+    playerFiresAt(mouse);
   });
 
   canvas.mousemove(function(e) {
