@@ -54,6 +54,10 @@ function drawLine(p1,p2,color) {
   context.stroke();
 }
 
+function outOfBounds(a) {
+  return (a.position.x > width + a.radius || a.position.x < a.radius || a.position.y < a.radius || a.position.y > height + a.radius);
+}
+
 function draw() {
   drawBackground();
   player.direction = getDirection(player.position, mouse);
@@ -62,6 +66,11 @@ function draw() {
   for (var i = 0; i < bullets.length; i++) {
     var b = bullets[i];
     updateGameNode(b);
+    if (outOfBounds(b)) {
+      bullets.splice(i, 1);
+      console.log(bullets);
+      break;
+    };
   }
 
   drawLine({"x" : mouse.x-5, "y" : mouse.y}, {"x" : mouse.x+5, "y": mouse.y}, "red");
