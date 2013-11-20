@@ -20,6 +20,8 @@ var mouse;
 var bullets = [];
 var zombies = [];
 var maxZombies = 5;
+var score = 0;
+var highScore = 0;
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -70,7 +72,7 @@ function drawBullets() {
       if (distance(z.position, b.position) < z.radius + b.radius) {
         zombies.splice(j, 1);
         bullets.splice(i, 1);
-        //break;
+        score++;
         return;
       }
     }
@@ -87,7 +89,18 @@ function drawZombies() {
     var z = zombies[j];
     z.direction = getDirection(z.position, player.position);
     updateGameNode(z);
+    if (distance(z.position, player.position) < player.radius + z.radius) {
+      if (score > highScore) {
+        highScore = score;
+      }
+      score = 0;
+    }
   }
+}
+
+function drawScore() {
+  context.fillStyle = "white";
+  context.fillText("score: " + score + "  best: " + highScore, width / 2,height - 20);
 }
 
 function draw() {
@@ -97,6 +110,7 @@ function draw() {
 
   drawBullets();
   drawZombies();
+  drawScore();
 
   if (zombies.length < maxZombies) {
     spawnZombie();
