@@ -18,6 +18,7 @@ var playerDirection;
 var playerSpeed = 3;
 var mouse;
 var bullets = [];
+var zombies = [];
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -58,20 +59,43 @@ function outOfBounds(a) {
   return (a.position.x > width + a.radius || a.position.x < a.radius || a.position.y < a.radius || a.position.y > height + a.radius);
 }
 
+function drawBullets() {
+  for (var i = 0; i < bullets.length; i++) {
+    var b = bullets[i];
+    updateGameNode(b);
+
+    for (var j = 0; j < zombies.length; j++) {
+      var z = zombies[j];
+      if (distance(z.position, b.position) < z.radius + b.radius) {
+        zombies.splice(j, i);
+        bullets.splice(i, 1);
+        return;
+      }
+    }
+
+    if (outOfBounds(b)) {
+      bullets.splice(i, 1);
+      break;
+    };
+  }
+}
+
+function drawZombies() {
+  for (var j = 0; j < zombies.length; j++) {
+    var z = zombies[j];
+    z.direction = getDirection(z.position, player.position);
+    updateGameNode(z);
+  }
+}
+
 function draw() {
   drawBackground();
   player.direction = getDirection(player.position, mouse);
   updateGameNode(player);
 
-  for (var i = 0; i < bullets.length; i++) {
-    var b = bullets[i];
-    updateGameNode(b);
-    if (outOfBounds(b)) {
-      bullets.splice(i, 1);
-      console.log(bullets);
-      break;
-    };
-  }
+  drawBullets();
+
+  drawZombies();
 
   drawLine({"x" : mouse.x-5, "y" : mouse.y}, {"x" : mouse.x+5, "y": mouse.y}, "red");
   drawLine({"x" : mouse.x, "y" : mouse.y - 5}, {"x" : mouse.x, "y": mouse.y + 5}, "red");
@@ -127,11 +151,19 @@ function playerFiresAt(target) {
   bullet.y = player.y;
   bullet.color = "yellow";
   bullet.speed = 5;
-  bullet.radius = 5;
+  bullet.radius = 3;
 
   bullet.direction = getDirection(bullet.position, target);
 
   bullets.push(bullet);
+}
+
+function spawnZombie() {
+  var z = new GameNode(150,150);
+  z.speed = .7;
+  z.color = "green";
+  z.radius = 8;
+  zombies.push(z);
 }
 
 $(document).ready(function() {
@@ -141,10 +173,12 @@ $(document).ready(function() {
   player = new GameNode(width / 2, height / 2);
   player.radius = 15;
   player.color = "blue";
+  player.speed = 1.8;
   mouse = new Point(0,0);
 
   canvas.click(function(e) {
     playerFiresAt(mouse);
+    spawnZombie();
   });
 
   canvas.mousemove(function(e) {
