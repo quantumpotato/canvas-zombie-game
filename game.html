@@ -19,6 +19,7 @@ var playerSpeed = 3;
 var mouse;
 var bullets = [];
 var zombies = [];
+var maxZombies = 5;
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -67,8 +68,9 @@ function drawBullets() {
     for (var j = 0; j < zombies.length; j++) {
       var z = zombies[j];
       if (distance(z.position, b.position) < z.radius + b.radius) {
-        zombies.splice(j, i);
+        zombies.splice(j, 1);
         bullets.splice(i, 1);
+        //break;
         return;
       }
     }
@@ -94,8 +96,11 @@ function draw() {
   updateGameNode(player);
 
   drawBullets();
-
   drawZombies();
+
+  if (zombies.length < maxZombies) {
+    spawnZombie();
+  }
 
   drawLine({"x" : mouse.x-5, "y" : mouse.y}, {"x" : mouse.x+5, "y": mouse.y}, "red");
   drawLine({"x" : mouse.x, "y" : mouse.y - 5}, {"x" : mouse.x, "y": mouse.y + 5}, "red");
@@ -150,7 +155,7 @@ function playerFiresAt(target) {
   bullet.x = player.x;
   bullet.y = player.y;
   bullet.color = "yellow";
-  bullet.speed = 5;
+  bullet.speed = 3.5;
   bullet.radius = 3;
 
   bullet.direction = getDirection(bullet.position, target);
@@ -159,10 +164,13 @@ function playerFiresAt(target) {
 }
 
 function spawnZombie() {
-  var z = new GameNode(150,150);
+  var x = Math.random() * 2 > 1 ? width : 0;
+  var y = Math.random() * height;
+
+  var z = new GameNode(x,y);
   z.speed = .7;
   z.color = "green";
-  z.radius = 8;
+  z.radius = 12;
   zombies.push(z);
 }
 
@@ -178,7 +186,6 @@ $(document).ready(function() {
 
   canvas.click(function(e) {
     playerFiresAt(mouse);
-    spawnZombie();
   });
 
   canvas.mousemove(function(e) {
