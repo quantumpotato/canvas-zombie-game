@@ -4,6 +4,7 @@
 <style type='text/css'>
 canvas {
   border: 1px solid #aaa;
+  cursor: none;
 }
 </style>
 
@@ -45,6 +46,13 @@ function GameNode(x,y) {
   this.color = "white";
   this.radius = 5;
 }
+function drawLine(p1,p2,color) {
+  context.beginPath();
+  context.strokeStyle = color;
+  context.moveTo(p1.x,p1.y);
+  context.lineTo(p2.x,p2.y);
+  context.stroke();
+}
 
 function draw() {
   drawBackground();
@@ -55,6 +63,9 @@ function draw() {
     var b = bullets[i];
     updateGameNode(b);
   }
+
+  drawLine({"x" : mouse.x-5, "y" : mouse.y}, {"x" : mouse.x+5, "y": mouse.y}, "red");
+  drawLine({"x" : mouse.x, "y" : mouse.y - 5}, {"x" : mouse.x, "y": mouse.y + 5}, "red");
 
   requestAnimationFrame(draw);
 }
