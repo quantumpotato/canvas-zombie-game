@@ -14,6 +14,9 @@ var context;
 var width = 500;
 var height = 500;
 var player;
+var playerDirection;
+var playerSpeed = 3;
+var mouse;
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -31,8 +34,47 @@ function drawBackground() {
 
 function draw() {
   drawBackground();
+  playerDirection = getDirection(player, mouse);
+  player = combineVector(player, playerDirection);
   drawCircle(player, "blue", 15);
   requestAnimationFrame(draw);
+}
+
+function distance(a,b) {
+  var xdist = Math.abs(a.x - b.x);
+  var ydist = Math.abs(a.y - b.y);
+  xdist = xdist * xdist;
+  ydist = ydist * ydist;
+  if (Math.abs(xdist + ydist) > 0) {
+    return Math.sqrt(xdist + ydist);
+  }
+
+  return 1000; //far
+}
+
+function getDirection(a,b) {
+  var dist = distance(a,b);
+
+  if (dist == 0) {
+    return new Point(0,0);
+  }
+
+  var distX = Math.abs(a.x-b.x) / dist;
+  var distY = Math.abs(a.y-b.y) / dist;
+
+  if (b.x < a.x) {
+    distX = -distX;
+  }
+
+  if (b.y < a.y) {
+    distY = -distY;
+  }
+
+  return new Point(distX,distY);
+}
+
+function combineVector(a, b) {
+  return new Point (a.x+b.x,a.y+b.y);
 }
 
 function Point(x,y) {
@@ -45,6 +87,7 @@ $(document).ready(function() {
   context = canvas.get(0).getContext('2d');
 
   player = new Point(width / 2, height / 2);
+  mouse = new Point(0,0);
 
   canvas.click(function(e) {
     var mousex = e.pageX - canvas.offset().left;
@@ -52,8 +95,8 @@ $(document).ready(function() {
   });
 
   canvas.mousemove(function(e) {
-    player.x = e.pageX - canvas.offset().left;
-    player.y = e.pageY - canvas.offset().top;
+    mouse.x = e.pageX - canvas.offset().left;
+    mouse.y = e.pageY - canvas.offset().top;
   });
 
   requestAnimationFrame(draw);
