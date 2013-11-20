@@ -4,7 +4,6 @@
 <style type='text/css'>
 canvas {
   border: 1px solid #aaa;
-  cursor: none;
 }
 </style>
 
@@ -17,8 +16,7 @@ var player;
 var playerDirection;
 var playerSpeed = 3;
 var mouse;
-var bullet;
-var bulletDirection;
+var bullets = [];
 
 function drawCircle(p,color,radius) {
   context.fillStyle = color;
@@ -34,15 +32,29 @@ function drawBackground() {
   context.fillRect(0,0,width,height);
 }
 
+function updateGameNode(n) {
+  var velocity = {"x" : n.direction.x * n.speed, "y" : n.direction.y * n.speed};
+  n.position = combineVector(n.position, velocity);
+  drawCircle(n.position, n.color, n.radius);
+}
+
+function GameNode(x,y) {
+  this.position = new Point(x, y);
+  this.direction = new Point(0,0);
+  this.speed = 1;
+  this.color = "white";
+  this.radius = 5;
+}
+
 function draw() {
   drawBackground();
-  playerDirection = getDirection(player, mouse);
-  player = combineVector(player, playerDirection);
-  drawCircle(player, "blue", 15);
+  player.direction = getDirection(player.position, mouse);
+  updateGameNode(player);
 
-  var bulletVector = {"x" : bulletDirection.x * 3, "y" : bulletDirection.y * 3};
-  bullet = combineVector(bullet, bulletVector);
-  drawCircle(bullet, "yellow", 5);
+  for (var i = 0; i < bullets.length; i++) {
+    var b = bullets[i];
+    updateGameNode(b);
+  }
 
   requestAnimationFrame(draw);
 }
@@ -90,20 +102,26 @@ function Point(x,y) {
 }
 
 function playerFiresAt(target) {
+  var bullet = new GameNode(player.position.x, player.position.y);
   bullet.x = player.x;
   bullet.y = player.y;
+  bullet.color = "yellow";
+  bullet.speed = 5;
+  bullet.radius = 5;
 
-  bulletDirection = getAngle(player, target);
+  bullet.direction = getDirection(bullet.position, target);
+
+  bullets.push(bullet);
 }
 
 $(document).ready(function() {
   var canvas = $('#canvas');
   context = canvas.get(0).getContext('2d');
 
-  player = new Point(width / 2, height / 2);
+  player = new GameNode(width / 2, height / 2);
+  player.radius = 15;
+  player.color = "blue";
   mouse = new Point(0,0);
-  bullet = new Point(0,0);
-  bulletDirection = new Point(0,0);
 
   canvas.click(function(e) {
     playerFiresAt(mouse);
