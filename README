@@ -1,0 +1,10 @@
+Beginner Game Programming in HTML5 + Javascript!
+
+Learning: jquery is included for onLoad. You don't need to read and understand it (and most Javascript developers don't). It's a magic tool that lets our code be called when the page loads.
+
+game.html demonstrates Basic canvas drawing, regular updates and game logic.
+
+Playing: Move your mouse, click to fire, kill zombies to score points.
+
+Good luck and have fun!
+
